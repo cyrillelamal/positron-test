@@ -9,7 +9,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+/**
+ * @Vich\Uploadable()
+ */
 #[ORM\Entity(repositoryClass: BookRepository::class)]
 class Book
 {
@@ -50,6 +55,11 @@ class Book
 
     #[ORM\ManyToMany(targetEntity: Author::class, inversedBy: 'books')]
     private ArrayCollection $authors;
+
+    /**
+     * @Vich\UploadableField(mapping="book_thumbnails", fileNameProperty="thumbnailUrl")
+     */
+    private ?File $thumbnailFIle = null;
 
     public function __construct()
     {
