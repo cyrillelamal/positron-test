@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Domain\Book\Status;
 use App\Repository\BookRepository;
+use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,6 +17,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @Vich\Uploadable()
  */
 #[ORM\Entity(repositoryClass: BookRepository::class)]
+#[ORM\UniqueConstraint(name: 'book_isbn', columns: ['isbn'])]
 class Book
 {
     #[ORM\Id]
@@ -26,45 +28,56 @@ class Book
     #[ORM\Column(type: Types::STRING, length: 511)]
     private ?string $title = null;
 
-    #[ORM\Column(type: Types::STRING, length: 13)]
+    #[ORM\Column(type: Types::STRING, length: 13, nullable: true)]
     private ?string $isbn = null;
 
     #[ORM\Column(type: Types::INTEGER)]
     private int $pageCount = 0;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?DateTimeInterface $publishedDate = null;
 
-    #[ORM\Column(type: Types::JSON)]
+    #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?string $thumbnailUrl = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $shortDescription = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $longDescription = null;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
     private ?string $status = Status::PUBLISH;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?DateTimeInterface $updatedAt = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'books')]
-    private ArrayCollection $categories;
+    private Collection $categories;
 
     #[ORM\ManyToMany(targetEntity: Author::class, inversedBy: 'books')]
-    private ArrayCollection $authors;
+    private Collection $authors;
 
     /**
      * @Vich\UploadableField(mapping="book_thumbnails", fileNameProperty="thumbnailUrl")
      */
-    private ?File $thumbnailFIle = null;
+    private ?File $thumbnailFile = null;
 
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->authors = new ArrayCollection();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getCategoryNames(): array
+    {
+        return $this
+            ->getCategories()
+            ->map(fn(Category $category) => $category->getName())
+            ->toArray();
     }
 
     public function getId(): ?int
@@ -89,7 +102,7 @@ class Book
         return $this->isbn;
     }
 
-    public function setIsbn(string $isbn): self
+    public function setIsbn(?string $isbn): self
     {
         $this->isbn = $isbn;
 
@@ -113,7 +126,7 @@ class Book
         return $this->publishedDate;
     }
 
-    public function setPublishedDate(DateTimeInterface $publishedDate): self
+    public function setPublishedDate(?DateTimeInterface $publishedDate): self
     {
         $this->publishedDate = $publishedDate;
 
@@ -125,7 +138,7 @@ class Book
         return $this->thumbnailUrl;
     }
 
-    public function setThumbnailUrl(string $thumbnailUrl): self
+    public function setThumbnailUrl(?string $thumbnailUrl): self
     {
         $this->thumbnailUrl = $thumbnailUrl;
 
@@ -137,7 +150,7 @@ class Book
         return $this->shortDescription;
     }
 
-    public function setShortDescription(string $shortDescription): self
+    public function setShortDescription(?string $shortDescription): self
     {
         $this->shortDescription = $shortDescription;
 
@@ -149,7 +162,7 @@ class Book
         return $this->longDescription;
     }
 
-    public function setLongDescription(string $longDescription): self
+    public function setLongDescription(?string $longDescription): self
     {
         $this->longDescription = $longDescription;
 
@@ -226,5 +239,23 @@ class Book
         $this->authors->removeElement($author);
 
         return $this;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getThumbnailFile(): ?File
+    {
+        return $this->thumbnailFile;
+    }
+
+    /**
+     * @param File $file
+     */
+    public function setThumbnailFile(File $file): void
+    {
+        $this->thumbnailFile = $file;
+
+        $this->updatedAt = new DateTime();
     }
 }

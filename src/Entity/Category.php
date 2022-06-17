@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[ORM\UniqueConstraint(name: 'category_name', columns: ['name'])]
 class Category
 {
     #[ORM\Id]
@@ -16,15 +17,17 @@ class Category
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255)]
-    private ?string $name = null;
+    #[ORM\Column(type: Types::STRING, length: 255, options: ['collation' => 'utf8_bin'])]
+    private string $name;
 
     #[ORM\ManyToMany(targetEntity: Book::class, mappedBy: 'categories')]
     private Collection $books;
 
-    public function __construct()
+    public function __construct(string $name = '')
     {
         $this->books = new ArrayCollection();
+
+        $this->name = $name;
     }
 
     public function getId(): ?int

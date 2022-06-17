@@ -2,22 +2,19 @@
 
 namespace App\Service\BookData\Provider;
 
-use App\Service\BookData\Dto\BookDataDto;
-use App\Service\File\TmpFile;
+use App\Domain\Book\Dto\CreateBookDto;
+use DateTime;
 use Exception;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Items;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Traversable;
 
-class GitLabBookDataProvider implements BookDataProviderInterface, LoggerAwareInterface
+class GitLabBookDataProvider implements BookDataProviderInterface
 {
-    private LoggerInterface $logger;
-
     private string $url;
     private HttpClientInterface $http;
 
@@ -35,38 +32,45 @@ class GitLabBookDataProvider implements BookDataProviderInterface, LoggerAwareIn
      */
     public function getData(): Traversable
     {
-        $swap = new TmpFile();
-
         try {
             $response = $this->http->request(Request::METHOD_GET, $this->url);
-            $this->saveResponseContentToSwapFile($response, $swap);
 
-            foreach (Items::fromFile($swap->getTmpfname()) as $data) {
-                yield BookDataDto::hydrateFrom((array)$data);
+            $chunks = (function () use ($response) {
+                foreach ($this->http->stream($response) as $chunk) {
+                    yield $chunk->getContent();
+                }
+            })();
+
+            foreach (Items::fromIterable($chunks) as $data) {
+                yield $this->newCreateBookDto($data);
             }
         } catch (TransportExceptionInterface $e) {
-            $this->logger->error('API is unreachable', ['exception' => $e, 'http' => $this->http]);
+            throw new RuntimeException('API is unreachable.', previous: $e);
         } catch (InvalidArgumentException|Exception $e) {
-            $this->logger->error('API has changed', ['exception' => $e, 'http' => $this->http]);
-        } finally {
-            $swap->close();
+            throw new RuntimeException('API has changed', previous: $e);
         }
 
         yield from [];
     }
 
     /**
-     * @throws TransportExceptionInterface
+     * @throws Exception
      */
-    protected function saveResponseContentToSwapFile($response, TmpFile $swap): void
+    protected function newCreateBookDto(object $data): CreateBookDto
     {
-        foreach ($this->http->stream($response) as $chunk) {
-            $swap->write($chunk->getContent());
-        }
-    }
+        $dto = new CreateBookDto();
 
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
+        foreach ($data as $property => $value) {
+            if (property_exists($dto, $property)) {
+
+                if ('publishedDate' === $property) {
+                    $value = new DateTime($value->{'$date'});
+                }
+
+                $dto->$property = $value;
+            }
+        }
+
+        return $dto;
     }
 }

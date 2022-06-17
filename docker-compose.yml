@@ -1,7 +1,17 @@
 version: '3'
 
 services:
-###> doctrine/doctrine-bundle ###
+#
+#  php:
+#    build:
+#      context: ./
+#      dockerfile: ./docker-compose/php/Dockerfile
+#    volumes:
+#      - ./:/var/www/positron:rw
+#    depends_on:
+#      - database
+#    user: www-data
+  ###> doctrine/doctrine-bundle ###
   database:
     image: mysql:${MYSQL_VERSION:-5.7}
     environment:
@@ -13,9 +23,19 @@ services:
       - db-data:/var/lib/mysql:rw
     ports:
       - "3306:3306"
+#  nginx:
+#    image: nginx:1.8.1-alpine
+#    ports:
+#      - '80:80'
+#    volumes:
+#      - ./docker-compose/nginx:/etc/nginx/conf.d:ro
+#      - ./var/log/nginx:/var/log/nginx:rw
+#      - ./:/var/www/positron:ro
+#    depends_on:
+#      - php
 ###< doctrine/doctrine-bundle ###
 
 volumes:
-###> doctrine/doctrine-bundle ###
+  ###> doctrine/doctrine-bundle ###
   db-data:
 ###< doctrine/doctrine-bundle ###

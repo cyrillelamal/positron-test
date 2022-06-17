@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <section class="container pt-5">
+        <h1>{{ book.title }}</h1>
+
+        <div>
+            {% for category in book.categories %}
+                <div>
+                    <a href="{{ path('category_read', {id: category.id}) }}">{{ category.name }}</a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ 'book.pages.nb'|trans }}: {{ book.pageCount }}
+        </div>
+
+        <div>
+            {{ 'book.isbn'|trans }}: {{ book.isbn }}
+        </div>
+
+        {% if other_books_from_category %}
+            <div>
+                <h3>{{ 'book.others'|trans }}</h3>
+                {% for other_book in other_books_from_category %}
+                    <p>
+                        <a href="{{ path('book_read', {id: other_book.id}) }}">{{ other_book.title }}</a>
+                    </p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </section>
+{% endblock %}

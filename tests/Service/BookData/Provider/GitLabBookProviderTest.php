@@ -3,12 +3,12 @@
 namespace App\Tests\Service\BookData\Provider;
 
 use App\Service\BookData\Provider\GitLabBookDataProvider;
-use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
+use RuntimeException;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class GitLabBookProviderTest extends TestCase
+class GitLabBookProviderTest extends KernelTestCase
 {
     public const URL = 'http://foo.test';
 
@@ -20,8 +20,9 @@ class GitLabBookProviderTest extends TestCase
             ->with(Request::METHOD_GET, self::URL);
 
         $provider = new GitLabBookDataProvider(self::URL, $http);
-        $provider->setLogger($this->createMock(LoggerInterface::class));
 
-        iterator_to_array($provider->getData()); // It's a generator.
+        $this->expectException(RuntimeException::class); // Because of empty JSON.
+
+        iterator_to_array($provider->getData());
     }
 }

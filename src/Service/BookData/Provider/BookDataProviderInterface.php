@@ -2,13 +2,13 @@
 
 namespace App\Service\BookData\Provider;
 
-use App\Service\BookData\Dto\BookDataDto;
+use App\Domain\Book\Dto\CreateBookDto;
 use Traversable;
 
 interface BookDataProviderInterface
 {
     /**
-     * @return Traversable<BookDataDto>
+     * @return Traversable<CreateBookDto>
      */
     public function getData(): Traversable;
 }

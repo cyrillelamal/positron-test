@@ -26,5 +26,8 @@ services:
     public: true
     arguments:
       $url: 'https://gitlab.com/prog-positron/test-app-vacancy/-/raw/master/books.json'
+  App\Domain\Book\UseCase\InsertNewBooks:
+    arguments:
+      $directory: '%kernel.project_dir%/public%app.path.book_thumbnails%'
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones

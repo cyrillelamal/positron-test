@@ -4,7 +4,10 @@ namespace App\Repository;
 
 use App\Entity\Book;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use RuntimeException;
 
 /**
  * @extends ServiceEntityRepository<Book>
@@ -39,28 +42,50 @@ class BookRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Book[] Returns an array of Book objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('b.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function similarBookExists(string $title, ?string $isbn = ''): bool
+    {
+        $qb = $this->createQueryBuilder('b');
 
-//    public function findOneBySomeField($value): ?Book
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $qb->select('COUNT(b.id)')
+            ->where('b.title = :title')->setParameter('title', $title);
+
+        if (null === $isbn) {
+            $qb->orWhere('b.isbn IS NULL');
+        } else {
+            $qb->orWhere('b.isbn = :isbn')->setParameter('isbn', $isbn);
+        }
+
+        try {
+            return $qb->getQuery()->getSingleScalarResult();
+        } catch (NoResultException|NonUniqueResultException) {
+            return false;
+        }
+    }
+
+    public function findByIdJoinCategoriesAndAuthors(int $id): ?Book
+    {
+        try {
+            return $this->createQueryBuilder('b')
+                ->addSelect('categories')
+                ->addSelect('authors')
+                ->leftJoin('b.categories', 'categories')
+                ->leftJoin('b.authors', 'authors')
+                ->where('b.id = :id')->setParameter('id', $id)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            throw new RuntimeException('Unexpected domain.', previous: $e);
+        }
+    }
+
+    public function findBooksInSameCategory(Book $book): array
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        $qb->join('b.categories', 'categories')
+            ->where('categories.name IN (:names)')->setParameter('names', $book->getCategoryNames())
+            ->andWhere('b.id <> :id')->setParameter('id', $book->getId());
+
+        return $qb->getQuery()->getResult();
+    }
 }

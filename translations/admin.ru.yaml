@@ -1,0 +1,36 @@
+book:
+  edit: 'Редактировать книгу'
+  new: 'Новая книга'
+  nom:
+    s: 'Книга'
+    pl: 'Книги'
+  acc:
+    s: 'Книгу'
+    pl: 'Книги'
+  fields:
+    id: 'ID'
+    title: 'Название'
+    isbn: 'ISBN'
+    page_count: 'Количество страниц'
+    short_description: 'Короткое описание'
+    long_description: 'Длинное описание'
+    status: 'Статус'
+    published_date: 'Дата публикации'
+    updated_at: 'Дата загрузки'
+
+category:
+  edit: 'Редактировать категорию'
+  new: 'Новая категория'
+  nom:
+    s: 'Категория'
+    pl: 'Категории'
+  acc:
+    s: 'Категорию'
+    pl: 'Категории'
+  fields:
+    id: 'ID'
+    name: 'Название'
+
+vich_uploader:
+  form_label:
+    delete_confirm: 'Удалить'
