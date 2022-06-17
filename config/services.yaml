@@ -6,6 +6,7 @@
 parameters:
   app.name: 'Positron-test'
   app.path.book_thumbnails: '/uploads/images/books/thumbnails'
+  app.default.category: 'Новинки'
 
 services:
   # default configuration for services in *this* file
@@ -28,6 +29,9 @@ services:
       $url: 'https://gitlab.com/prog-positron/test-app-vacancy/-/raw/master/books.json'
   App\Domain\Book\UseCase\InsertNewBooks:
     arguments:
-      $directory: '%kernel.project_dir%/public%app.path.book_thumbnails%'
+      $thumbnailsDirectory: '%kernel.project_dir%/public%app.path.book_thumbnails%'
+  App\Domain\Category\UseCase\AddDefaultCategory:
+    arguments:
+      $defaultCategory: '%app.default.category%'
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones

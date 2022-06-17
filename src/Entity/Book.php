@@ -80,6 +80,11 @@ class Book
             ->toArray();
     }
 
+    public function hasNoCategories(): bool
+    {
+        return $this->getCategories()->count() < 1;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

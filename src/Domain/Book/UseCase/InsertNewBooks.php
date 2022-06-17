@@ -6,6 +6,7 @@ use App\Domain\Author\Dto\CreateAuthorDto;
 use App\Domain\Author\UseCase\FindAuthorsByName;
 use App\Domain\Author\UseCase\InsertNewAuthors;
 use App\Domain\Book\Dto\CreateBookDto;
+use App\Domain\Book\Event\BookCreatedEvent;
 use App\Domain\Category\Dto\CreateCategoryDto;
 use App\Domain\Category\UseCase\FindCategoriesByNames;
 use App\Domain\Category\UseCase\InsertNewCategories;
@@ -18,6 +19,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -42,17 +44,19 @@ class InsertNewBooks implements LoggerAwareInterface
     private FilesystemOperator $storage;
     private HttpClientInterface $http;
     private string $directory;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        FindCategoriesByNames  $findCategoriesByNames,
-        FindAuthorsByName      $findAuthorsByName,
-        InsertNewCategories    $insertNewCategories,
-        InsertNewAuthors       $insertNewAuthors,
-        BookRepository         $repository,
-        FilesystemOperator     $booksImagesStorage,
-        HttpClientInterface    $http,
-        string                 $directory,
+        EntityManagerInterface   $entityManager,
+        FindCategoriesByNames    $findCategoriesByNames,
+        FindAuthorsByName        $findAuthorsByName,
+        InsertNewCategories      $insertNewCategories,
+        InsertNewAuthors         $insertNewAuthors,
+        BookRepository           $repository,
+        FilesystemOperator       $booksImagesStorage,
+        HttpClientInterface      $http,
+        string                   $thumbnailsDirectory,
+        EventDispatcherInterface $eventDispatcher,
     )
     {
         $this->entityManager = $entityManager;
@@ -63,7 +67,8 @@ class InsertNewBooks implements LoggerAwareInterface
         $this->repository = $repository;
         $this->storage = $booksImagesStorage;
         $this->http = $http;
-        $this->directory = $directory;
+        $this->directory = $thumbnailsDirectory;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -87,6 +92,8 @@ class InsertNewBooks implements LoggerAwareInterface
                 $books[] = $book;
 
                 $this->entityManager->flush(); // FIXME: N + 1, e.g. with chunks.
+
+                $this->eventDispatcher->dispatch(new BookCreatedEvent($book));
             }
             $this->entityManager->commit();
         } catch (Exception $e) {
