@@ -17,13 +17,15 @@ class Author
     private ?int $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
-    private ?string $name = null;
+    private string $name;
 
     #[ORM\ManyToMany(targetEntity: Book::class, mappedBy: 'authors')]
     private Collection $books;
 
-    public function __construct()
+    public function __construct(string $name = '')
     {
+        $this->name = $name;
+
         $this->books = new ArrayCollection();
     }
 

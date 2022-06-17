@@ -39,28 +39,34 @@ class AuthorRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Author[] Returns an array of Author objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @param string ...$names
+     * @return Author[]
+     */
+    public function findAuthorsByName(string ...$names): array
+    {
+        $qb = $this->createQueryBuilder('a');
 
-//    public function findOneBySomeField($value): ?Author
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $qb->where('a.name IN (:names)')->setParameter('names', $names);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param string ...$names
+     * @return string[]
+     */
+    public function findExistingNames(string ...$names): array
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        $qb->select('a.name')
+            ->where('a.name IN (:names)')
+            ->setParameter('names', $names);
+
+        return array_map(
+            fn(array $data) => $data['name'],
+            $qb->getQuery()->getResult()
+        );
+    }
 }

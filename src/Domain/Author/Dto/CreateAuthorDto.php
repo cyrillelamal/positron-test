@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Domain\Category\Dto;
+namespace App\Domain\Author\Dto;
 
-class CreateCategoryDto
+class CreateAuthorDto
 {
     public string $name;
 

@@ -69,4 +69,14 @@ class CategoryRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @return Category[]
+     */
+    public function findTopLevelCategories(): array
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        return $qb->getQuery()->getResult();
+    }
 }

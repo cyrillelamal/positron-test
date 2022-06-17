@@ -2,11 +2,16 @@
 
 namespace App\Domain\Book\UseCase;
 
+use App\Domain\Author\Dto\CreateAuthorDto;
+use App\Domain\Author\UseCase\FindAuthorsByName;
+use App\Domain\Author\UseCase\InsertNewAuthors;
 use App\Domain\Book\Dto\CreateBookDto;
 use App\Domain\Category\Dto\CreateCategoryDto;
 use App\Domain\Category\UseCase\FindCategoriesByNames;
 use App\Domain\Category\UseCase\InsertNewCategories;
+use App\Entity\Author;
 use App\Entity\Book;
+use App\Entity\Category;
 use App\Repository\BookRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,7 +35,9 @@ class InsertNewBooks implements LoggerAwareInterface
 
     private EntityManagerInterface $entityManager;
     private FindCategoriesByNames $findCategoriesByNames;
+    private FindAuthorsByName $findAuthorsByName;
     private InsertNewCategories $insertNewCategories;
+    private InsertNewAuthors $insertNewAuthors;
     private BookRepository $repository;
     private FilesystemOperator $storage;
     private HttpClientInterface $http;
@@ -39,7 +46,9 @@ class InsertNewBooks implements LoggerAwareInterface
     public function __construct(
         EntityManagerInterface $entityManager,
         FindCategoriesByNames  $findCategoriesByNames,
+        FindAuthorsByName      $findAuthorsByName,
         InsertNewCategories    $insertNewCategories,
+        InsertNewAuthors       $insertNewAuthors,
         BookRepository         $repository,
         FilesystemOperator     $booksImagesStorage,
         HttpClientInterface    $http,
@@ -48,7 +57,9 @@ class InsertNewBooks implements LoggerAwareInterface
     {
         $this->entityManager = $entityManager;
         $this->findCategoriesByNames = $findCategoriesByNames;
+        $this->findAuthorsByName = $findAuthorsByName;
         $this->insertNewCategories = $insertNewCategories;
+        $this->insertNewAuthors = $insertNewAuthors;
         $this->repository = $repository;
         $this->storage = $booksImagesStorage;
         $this->http = $http;
@@ -89,25 +100,43 @@ class InsertNewBooks implements LoggerAwareInterface
 
     protected function insertNewCategories(string ...$categories): void
     {
-        $possiblyNewCategories = array_map(function (string $name) {
-            $dto = new CreateCategoryDto();
-            $dto->name = $name;
-            return $dto;
-        }, $categories);
+        $possiblyNewCategories = array_map(fn(string $name) => new CreateCategoryDto($name), $categories);
 
         ($this->insertNewCategories)(...$possiblyNewCategories);
     }
 
+    /**
+     * @param string ...$categories
+     * @return Category[]
+     */
     protected function reloadCategories(string ...$categories): array
     {
         return ($this->findCategoriesByNames)(...$categories);
     }
 
+    protected function insertNewAuthors(string ...$authors): void
+    {
+        $possiblyNewAuthors = array_map(fn(string $name) => new CreateAuthorDto($name), $authors);
+
+        ($this->insertNewAuthors)(...$possiblyNewAuthors);
+    }
+
+    /**
+     * @param string ...$authors
+     * @return Author[]
+     */
+    protected function reloadAuthors(string ...$authors): array
+    {
+        return ($this->findAuthorsByName)(...$authors);
+    }
+
     protected function makeBook(CreateBookDto $dto): Book
     {
         $this->insertNewCategories(...$dto->categories);
+        $this->insertNewAuthors(...$dto->authors);
 
         $categories = $this->reloadCategories(...$dto->categories);
+        $authors = $this->reloadAuthors(...$dto->authors);
 
         $book = new Book();
 
@@ -122,6 +151,10 @@ class InsertNewBooks implements LoggerAwareInterface
 
         foreach ($categories as $category) {
             $book->addCategory($category);
+        }
+
+        foreach ($authors as $author) {
+            $book->addAuthor($author);
         }
 
         if ($dto->thumbnailUrl) {

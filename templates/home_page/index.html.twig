@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <section class="d-flex flex-column justify-content-center align-items-center vh-100">
+        <div class="container">
+            <div class="row row-cols-4">
+                {% for category in categories %}
+
+                    <div class="col">
+                        <a href="{{ path('category_read', {id: category.id}) }}">{{ category.name }}</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
