@@ -1,0 +1,13 @@
+#  https://github.com/KnpLabs/KnpPaginatorBundle/blob/master/docs/paginator_configuration.md
+knp_paginator:
+  page_range: 5
+  default_options:
+    page_name: page
+    sort_field_name: sort
+    sort_direction_name: direction
+    distinct: true
+    default_limit: 10
+#  template:
+#    pagination: '@KnpPaginator/Pagination/bulma_pagination.html.twig'
+#        sortable: 'bulma_sortable.html.twig'
+#        filtration: '@KnpPaginator/Pagination/filtration.html.twig'  # filters template

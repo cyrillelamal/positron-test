@@ -3,9 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Book;
+use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 
@@ -78,6 +80,10 @@ class BookRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param Book $book
+     * @return Book[]
+     */
     public function findBooksInSameCategory(Book $book): array
     {
         $qb = $this->createQueryBuilder('b');
@@ -87,5 +93,18 @@ class BookRepository extends ServiceEntityRepository
             ->andWhere('b.id <> :id')->setParameter('id', $book->getId());
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function getQueryForCategoryPagination(Category|int $category): Query
+    {
+        $id =  $category instanceof Category ? $category->getId() : $category;
+
+        $qb = $this->createQueryBuilder('b')
+            ->join('b.categories', 'categories')
+            ->where('categories.id = :id')
+            ->setParameter('id', $id)
+            ->orderBy('b.updatedAt', 'DESC');
+
+        return $qb->getQuery();
     }
 }

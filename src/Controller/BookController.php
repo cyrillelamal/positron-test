@@ -6,6 +6,7 @@ use App\Entity\Book;
 use App\Repository\BookRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,7 +23,7 @@ class BookController extends AbstractController
         $this->repository = $repository;
     }
 
-    #[Route('/{id}', name: 'read', requirements: ['id' => '\d+'])]
+    #[Route('/{id}', name: 'read', requirements: ['id' => '\d+'], methods: [Request::METHOD_GET])]
 //    #[ParamConverter(data: 'book', class: Book::class)]
     public function read(int $id): Response
     {
