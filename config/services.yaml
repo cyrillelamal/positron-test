@@ -7,6 +7,7 @@ parameters:
   app.name: 'Positron-test'
   app.path.book_thumbnails: '/uploads/images/books/thumbnails'
   app.default.category: 'Новинки'
+  app.feedback.mail: 'foo@bar.com'
 
 services:
   # default configuration for services in *this* file

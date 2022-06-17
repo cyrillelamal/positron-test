@@ -13,6 +13,7 @@
         "doctrine/orm": "^2.12",
         "easycorp/easyadmin-bundle": "^4.3",
         "halaxa/json-machine": "^1.1",
+        "karser/karser-recaptcha3-bundle": "^0.1.22",
         "knplabs/knp-paginator-bundle": "^5.8",
         "league/flysystem-bundle": "^2.2",
         "phpdocumentor/reflection-docblock": "^5.3",
