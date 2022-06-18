@@ -7,7 +7,6 @@ parameters:
   app.name: 'Positron-test'
   app.path.book_thumbnails: '/uploads/images/books/thumbnails'
   app.default.category: 'Новинки'
-  app.feedback.mail: 'foo@bar.com'
 
 services:
   # default configuration for services in *this* file
@@ -34,5 +33,3 @@ services:
   App\Domain\Category\UseCase\AddDefaultCategory:
     arguments:
       $defaultCategory: '%app.default.category%'
-  # add more service definitions when explicit configuration is needed
-  # please note that last definitions always *replace* previous ones

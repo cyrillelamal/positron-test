@@ -3,6 +3,7 @@
 {% block body %}
     <section class="d-flex flex-column justify-content-center align-items-center vh-100">
         <div class="container">
+            {{ include('common/messages.html.twig') }}
             <div class="row row-cols-4">
                 {% for category in categories %}
 
@@ -10,6 +11,9 @@
                         <a href="{{ path('category_read', {id: category.id}) }}">{{ category.name }}</a>
                     </div>
                 {% endfor %}
+            </div>
+            <div class="text-center mt-5">
+                <a href="{{ path('feedback') }}">{{ 'feedback.title'|trans }}</a>
             </div>
         </div>
     </section>

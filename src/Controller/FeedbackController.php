@@ -2,49 +2,44 @@
 
 namespace App\Controller;
 
-use App\Entity\Feedback;
+use App\Domain\Feedback\Dto\CreateFeedbackDto;
+use App\Domain\Feedback\Exception\BadFeedbackDataException;
+use App\Domain\Feedback\UseCase\CreateFeedback;
 use App\Form\FeedbackFormType;
-use Karser\Recaptcha3Bundle\Validator\Constraints\Recaptcha3Validator;
-use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[Route(path: '/feedback', name: 'feedback_')]
+#[Route(path: '/feedback', name: 'feedback', methods: [Request::METHOD_GET, Request::METHOD_POST])]
 class FeedbackController extends AbstractController
 {
-    private Recaptcha3Validator $recaptchaValidator;
-    private MailerInterface $mailer;
+    private CreateFeedback $storeFeedback;
+    private TranslatorInterface $translator;
 
     public function __construct(
-        Recaptcha3Validator $recaptchaValidator,
-        MailerInterface     $mailer,
+        CreateFeedback      $storeFeedback,
+        TranslatorInterface $translator,
     )
     {
-        $this->recaptchaValidator = $recaptchaValidator;
-        $this->mailer = $mailer;
+        $this->storeFeedback = $storeFeedback;
+        $this->translator = $translator;
     }
 
-    #[Route('/', name: 'index', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function index(Request $request): Response
+    /**
+     * @throws BadFeedbackDataException all constraints are already handled by the form.
+     */
+    public function __invoke(Request $request): Response
     {
-        $feedback = new Feedback();
-        $form = $this->createForm(FeedbackFormType::class, $feedback);
+        $form = $this->createForm(FeedbackFormType::class, new CreateFeedbackDto);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            throw new LogicException('TODO: implement. Score: ' . $this->recaptchaValidator->getLastResponse()->getScore());
-//            $email = (new Email())
-//                ->from($this->getParameter('app.feedback.mail'))
-//                ->to($form['email']->getData())
-//                ->subject('Merci')
-//                ->text('Salut !');
-//
-//            $this->mailer->send($email);
+            ($this->storeFeedback)($form->getData());
 
+            $this->addFlash('success', $this->translator->trans('feedback.success'));
+            return $this->redirectToRoute('index');
         }
 
         return $this->render('feedback/index.html.twig', [
