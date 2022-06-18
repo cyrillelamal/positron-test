@@ -31,6 +31,19 @@ category:
     id: 'ID'
     name: 'Название'
 
+feedback:
+  index: 'Заявки'
+  detail: 'Детали заявки'
+  nom:
+    s: 'Заявка'
+    pl: 'Заявки'
+  fields:
+    id: 'ID'
+    email: 'Email'
+    name: 'Имя'
+    message: 'Сообщение'
+    phone_number: 'Телефон'
+
 vich_uploader:
   form_label:
     delete_confirm: 'Удалить'
