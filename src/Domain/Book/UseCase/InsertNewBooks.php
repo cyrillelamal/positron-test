@@ -165,14 +165,14 @@ class InsertNewBooks implements LoggerAwareInterface
         }
 
         if ($dto->thumbnailUrl) {
-            $file = $this->storeThumbNail($dto);
+            $file = $this->storeThumbnail($dto);
             $book->setThumbnailFile($file);
         }
 
         return $book;
     }
 
-    protected function storeThumbNail(CreateBookDto $dto): UploadedFile
+    protected function storeThumbnail(CreateBookDto $dto): UploadedFile
     {
         try {
             $response = $this->http->request(Request::METHOD_GET, $dto->thumbnailUrl);

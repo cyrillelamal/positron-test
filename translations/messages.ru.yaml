@@ -4,5 +4,13 @@ book:
   others: 'Книги в категории'
   isbn: 'ISBN'
 
-feedback: 'Обратная связь'
+#feedback: 'Обратная связь'
 send: 'Отправить'
+
+feedback:
+  title: 'Обратная связь'
+  email: 'Email'
+  name: 'Имя'
+  message: 'Сообщение'
+  phone_number: 'Телефон'
+  success: 'Сообщение было получено.'

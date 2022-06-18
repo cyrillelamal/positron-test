@@ -3,6 +3,7 @@
 {% block body %}
     <section class="d-flex flex-column justify-content-center align-items-center vh-100">
         <div class="container">
+            {{ include('common/messages.html.twig') }}
             <div class="row row-cols-4">
                 {% for category in categories %}
 

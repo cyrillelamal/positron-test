@@ -2,79 +2,43 @@
 
 namespace App\Entity;
 
+use App\Domain\Feedback\Dto\CreateFeedbackDto;
+use App\Entity\Getters\FeedbackGetters;
+use App\Entity\Setters\FeedbackSetters;
 use App\Repository\FeedbackRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FeedbackRepository::class)]
 class Feedback
 {
+    use FeedbackGetters;
+    use FeedbackSetters;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column(type: Types::INTEGER)]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $email;
+    #[ORM\Column(type: Types::STRING, length: 255)]
+    private string $email;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $name;
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: 'text')]
-    private $message;
+    #[ORM\Column(type: Types::TEXT)]
+    private string $message;
 
-    #[ORM\Column(type: 'string', length: 31, nullable: true)]
-    private $phoneNumber;
+    #[ORM\Column(type: Types::STRING, length: 31, nullable: true)]
+    private ?string $phoneNumber = null;
 
-    public function getId(): ?int
+    public static function createFromDto(CreateFeedbackDto $dto): self
     {
-        return $this->id;
-    }
+        $feedback = new self();
 
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
+        $feedback->setEmail($dto->email);
+        $feedback->setName($dto->name);
 
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getMessage(): ?string
-    {
-        return $this->message;
-    }
-
-    public function setMessage(string $message): self
-    {
-        $this->message = $message;
-
-        return $this;
-    }
-
-    public function getPhoneNumber(): ?string
-    {
-        return $this->phoneNumber;
-    }
-
-    public function setPhoneNumber(?string $phoneNumber): self
-    {
-        $this->phoneNumber = $phoneNumber;
-
-        return $this;
+        return  $feedback;
     }
 }
