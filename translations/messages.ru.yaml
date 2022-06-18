@@ -4,7 +4,6 @@ book:
   others: 'Книги в категории'
   isbn: 'ISBN'
 
-#feedback: 'Обратная связь'
 send: 'Отправить'
 
 feedback:
@@ -14,3 +13,6 @@ feedback:
   message: 'Сообщение'
   phone_number: 'Телефон'
   success: 'Сообщение было получено.'
+  notification:
+    subject: 'Ваш отзыв был получен.'
+    text: 'Спасибо за проявленный интерес к нашей компании.'
