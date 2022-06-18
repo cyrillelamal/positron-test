@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Domain\Book\Status;
+use App\Entity\Getters\BookGetters;
+use App\Entity\Setters\BookSetters;
 use App\Repository\BookRepository;
 use DateTime;
 use DateTimeInterface;
@@ -20,6 +22,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\UniqueConstraint(name: 'book_isbn', columns: ['isbn'])]
 class Book
 {
+    use BookGetters;
+    use BookSetters;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
@@ -85,127 +90,6 @@ class Book
         return $this->getCategories()->count() < 1;
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    public function getIsbn(): ?string
-    {
-        return $this->isbn;
-    }
-
-    public function setIsbn(?string $isbn): self
-    {
-        $this->isbn = $isbn;
-
-        return $this;
-    }
-
-    public function getPageCount(): ?int
-    {
-        return $this->pageCount;
-    }
-
-    public function setPageCount(int $pageCount): self
-    {
-        $this->pageCount = $pageCount;
-
-        return $this;
-    }
-
-    public function getPublishedDate(): ?DateTimeInterface
-    {
-        return $this->publishedDate;
-    }
-
-    public function setPublishedDate(?DateTimeInterface $publishedDate): self
-    {
-        $this->publishedDate = $publishedDate;
-
-        return $this;
-    }
-
-    public function getThumbnailUrl(): ?string
-    {
-        return $this->thumbnailUrl;
-    }
-
-    public function setThumbnailUrl(?string $thumbnailUrl): self
-    {
-        $this->thumbnailUrl = $thumbnailUrl;
-
-        return $this;
-    }
-
-    public function getShortDescription(): ?string
-    {
-        return $this->shortDescription;
-    }
-
-    public function setShortDescription(?string $shortDescription): self
-    {
-        $this->shortDescription = $shortDescription;
-
-        return $this;
-    }
-
-    public function getLongDescription(): ?string
-    {
-        return $this->longDescription;
-    }
-
-    public function setLongDescription(?string $longDescription): self
-    {
-        $this->longDescription = $longDescription;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(string $status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Category>
-     */
-    public function getCategories(): Collection
-    {
-        return $this->categories;
-    }
-
     public function addCategory(Category $category): self
     {
         if (!$this->categories->contains($category)) {
@@ -220,14 +104,6 @@ class Book
         $this->categories->removeElement($category);
 
         return $this;
-    }
-
-    /**
-     * @return Collection<int, Author>
-     */
-    public function getAuthors(): Collection
-    {
-        return $this->authors;
     }
 
     public function addAuthor(Author $author): self

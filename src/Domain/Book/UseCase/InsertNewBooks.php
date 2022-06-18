@@ -5,7 +5,7 @@ namespace App\Domain\Book\UseCase;
 use App\Domain\Author\Dto\CreateAuthorDto;
 use App\Domain\Author\UseCase\FindAuthorsByName;
 use App\Domain\Author\UseCase\InsertNewAuthors;
-use App\Domain\Book\Dto\CreateBookDto;
+use App\Domain\Book\Dto\NewBookDto;
 use App\Domain\Book\Event\BookCreatedEvent;
 use App\Domain\Category\Dto\CreateCategoryDto;
 use App\Domain\Category\UseCase\FindCategoriesByNames;
@@ -72,7 +72,7 @@ class InsertNewBooks implements LoggerAwareInterface
     }
 
     /**
-     * @param Traversable<CreateBookDto> $data
+     * @param Traversable<NewBookDto> $data
      * @return Book[] the newly created books.
      * @throws Exception
      */
@@ -81,7 +81,7 @@ class InsertNewBooks implements LoggerAwareInterface
         $books = [];
         $this->entityManager->beginTransaction();
         try {
-            foreach ($data as $bookData) /** @var CreateBookDto $bookData */ {
+            foreach ($data as $bookData) /** @var NewBookDto $bookData */ {
                 if ($this->repository->similarBookExists($bookData->title, $bookData->isbn)) {
                     continue;
                 }
@@ -137,7 +137,7 @@ class InsertNewBooks implements LoggerAwareInterface
         return ($this->findAuthorsByName)(...$authors);
     }
 
-    protected function makeBook(CreateBookDto $dto): Book
+    protected function makeBook(NewBookDto $dto): Book
     {
         $this->insertNewCategories(...$dto->categories);
         $this->insertNewAuthors(...$dto->authors);
@@ -172,7 +172,7 @@ class InsertNewBooks implements LoggerAwareInterface
         return $book;
     }
 
-    protected function storeThumbnail(CreateBookDto $dto): UploadedFile
+    protected function storeThumbnail(NewBookDto $dto): UploadedFile
     {
         try {
             $response = $this->http->request(Request::METHOD_GET, $dto->thumbnailUrl);

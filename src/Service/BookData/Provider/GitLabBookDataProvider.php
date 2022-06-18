@@ -2,13 +2,17 @@
 
 namespace App\Service\BookData\Provider;
 
-use App\Domain\Book\Dto\CreateBookDto;
-use DateTime;
-use Exception;
+use App\Domain\Book\Dto\NewBookDto;
+use App\Service\BookData\Event\BookDataStreamedEvent;
+use Generator;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Items;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use RuntimeException;
+use StdClass;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Traversable;
@@ -17,14 +21,20 @@ class GitLabBookDataProvider implements BookDataProviderInterface
 {
     private string $url;
     private HttpClientInterface $http;
+    private DenormalizerInterface $denormalizer;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        string              $url,
-        HttpClientInterface $httpClient,
+        string                   $url,
+        HttpClientInterface      $httpClient,
+        DenormalizerInterface    $denormalizer,
+        EventDispatcherInterface $eventDispatcher,
     )
     {
         $this->url = $url;
         $this->http = $httpClient;
+        $this->denormalizer = $denormalizer;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -33,44 +43,33 @@ class GitLabBookDataProvider implements BookDataProviderInterface
     public function getData(): Traversable
     {
         try {
-            $response = $this->http->request(Request::METHOD_GET, $this->url);
-
-            $chunks = (function () use ($response) {
-                foreach ($this->http->stream($response) as $chunk) {
-                    yield $chunk->getContent();
-                }
-            })();
-
-            foreach (Items::fromIterable($chunks) as $data) {
-                yield $this->newCreateBookDto($data);
+            foreach ($this->streamBookData() as $data) {
+                yield $this->denormalizer->denormalize($data, NewBookDto::class);
             }
         } catch (TransportExceptionInterface $e) {
             throw new RuntimeException('API is unreachable.', previous: $e);
-        } catch (InvalidArgumentException|Exception $e) {
-            throw new RuntimeException('API has changed', previous: $e);
+        } catch (InvalidArgumentException|ExceptionInterface $e) {
+            throw new RuntimeException('API has changed.', previous: $e);
         }
-
-        yield from [];
     }
 
     /**
-     * @throws Exception
+     * @return Generator<StdClass>
+     * @throws TransportExceptionInterface
+     * @throws InvalidArgumentException
      */
-    protected function newCreateBookDto(object $data): CreateBookDto
+    protected function streamBookData(): Generator
     {
-        $dto = new CreateBookDto();
-
-        foreach ($data as $property => $value) {
-            if (property_exists($dto, $property)) {
-
-                if ('publishedDate' === $property) {
-                    $value = new DateTime($value->{'$date'});
-                }
-
-                $dto->$property = $value;
+        $chunks = (function () {
+            $response = $this->http->request(Request::METHOD_GET, $this->url);
+            foreach ($this->http->stream($response) as $chunk) {
+                yield $chunk->getContent();
             }
-        }
+        })();
 
-        return $dto;
+        foreach (Items::fromIterable($chunks) as $data) {
+            $this->eventDispatcher->dispatch(new BookDataStreamedEvent($data), BookDataStreamedEvent::NAME);
+            yield $data;
+        }
     }
 }

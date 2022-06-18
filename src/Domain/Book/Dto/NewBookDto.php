@@ -4,7 +4,7 @@ namespace App\Domain\Book\Dto;
 
 use DateTimeInterface;
 
-class CreateBookDto
+class NewBookDto
 {
     public ?string $title = null;
 
