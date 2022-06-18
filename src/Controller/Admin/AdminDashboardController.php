@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Book;
 use App\Entity\Category;
+use App\Entity\Feedback;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -26,7 +27,7 @@ class AdminDashboardController extends AbstractDashboardController
     public function index(): Response
     {
         $url = $this->urlGenerator
-            ->setController(BookCrudController::class)
+            ->setController(FeedbackCrudController::class)
             ->generateUrl();
 
         return  $this->redirect($url);
@@ -41,6 +42,7 @@ class AdminDashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
+        yield MenuItem::linkToCrud('feedback.nom.pl', 'fa fa-comment', Feedback::class);
         yield MenuItem::linkToCrud('book.nom.pl', 'fa fa-book', Book::class);
         yield MenuItem::linkToCrud('category.nom.pl', 'fa fa-flag', Category::class);
     }

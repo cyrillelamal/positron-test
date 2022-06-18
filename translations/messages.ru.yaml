@@ -8,6 +8,8 @@ send: 'Отправить'
 
 feedback:
   title: 'Обратная связь'
+  index: 'Заявки'
+  detail: 'Детали заявки'
   email: 'Email'
   name: 'Имя'
   message: 'Сообщение'
