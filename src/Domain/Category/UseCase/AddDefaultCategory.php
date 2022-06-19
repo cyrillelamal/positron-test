@@ -43,6 +43,7 @@ class AddDefaultCategory implements LoggerAwareInterface
         if (null === $category) {
             $category = new Category($this->defaultCategory);
             $this->entityManager->persist($category);
+            $this->logger->info('Created default category.', ['category' => $category]);
         }
 
         return $category;

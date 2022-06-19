@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Domain\Book\UseCase\InsertNewBooks;
+use App\Domain\Book\Dto\NewBookDto;
 use App\Service\BookData\Provider\BookDataProviderInterface;
 use Exception;
 use Psr\Log\LoggerAwareInterface;
@@ -10,10 +10,13 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Messenger\MessageBusInterface;
 
+/**
+ * @todo i18n
+ */
 #[AsCommand(
     name: 'app:parse-books',
     description: 'Parse books from a third-party service.',
@@ -23,24 +26,17 @@ class ParseBooksCommand extends Command implements LoggerAwareInterface
     private LoggerInterface $logger;
 
     private BookDataProviderInterface $bookDataProvider;
-    private InsertNewBooks $insertNewBooks;
+    private MessageBusInterface $bus;
 
     public function __construct(
         BookDataProviderInterface $bookDataProvider,
-        InsertNewBooks            $insertNewBooks,
+        MessageBusInterface       $bus,
     )
     {
         $this->bookDataProvider = $bookDataProvider;
-        $this->insertNewBooks = $insertNewBooks;
+        $this->bus = $bus;
 
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->addOption('v', null, InputOption::VALUE_NONE, 'Verbosity level');
-        // TODO: implement verbosity option, e.g. using listener or callback on insertNewBooks action
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -48,16 +44,22 @@ class ParseBooksCommand extends Command implements LoggerAwareInterface
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $this->logger->debug('Downloading books.', ['provider' => $this->bookDataProvider]);
-            $io->info('Downloading books.');
-            $data = $this->bookDataProvider->getData();
+            $this->logger->debug('Fetching book data.', ['provider' => $this->bookDataProvider]);
+            $io->info('Fetching book data.');
 
-            $this->logger->debug('Appending books.');
-            $io->info('Appending books.');
-            ($this->insertNewBooks)($data);
+            foreach ($this->bookDataProvider->getData() as $data) /** @var NewBookDto $data */ {
+                $this->logger->info('Adding book.', ['data' => $data]);
+                if ($input->getOption('verbose')) {
+                    $io->info("Processing book \"{$data->title}\".");
+                }
 
-            $io->success('New books have been inserted!');
-        } catch (Exception) {
+                $this->bus->dispatch($data);
+            }
+
+            $io->success('New books have been added!');
+        } catch (Exception $e) {
+            $this->logger->error('Unexpected exception while parsing.', ['exception' => $e]);
+            $io->error('Something went wrong.');
             return Command::FAILURE;
         }
 

@@ -3,8 +3,14 @@
 namespace App\Repository;
 
 use App\Entity\Category;
+use App\Service\PlatformInformation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Exception;
 use Doctrine\Persistence\ManagerRegistry;
+use LogicException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 /**
  * @extends ServiceEntityRepository<Category>
@@ -14,8 +20,12 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Category[]    findAll()
  * @method Category[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CategoryRepository extends ServiceEntityRepository
+class CategoryRepository extends ServiceEntityRepository implements LoggerAwareInterface
 {
+    use PlatformInformation;
+
+    private LoggerInterface $logger;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Category::class);
@@ -39,22 +49,30 @@ class CategoryRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param string ...$names
-     * @return string[]
-     */
-    public function findExistingNames(string ...$names): array
+    public function upsert(Category ...$categories): void
     {
-        $qb = $this->createQueryBuilder('c');
+        if (!$this->isUsingMysql()) {
+            throw new LogicException('Cannot execute native upsert query.');
+        }
+        if (empty($categories)) {
+            return;
+        }
 
-        $qb->select('c.name')
-            ->where('c.name IN (:names)')
-            ->setParameter('names', $names);
+        $sql = '';
+        $params = [];
+        for ($i = 0; $i < count($categories); $i++) {
+            $sql .= "INSERT INTO `category` (`name`) VALUE (:name_$i) ON DUPLICATE KEY UPDATE `name` = `name`;"; // TODO: VALUES
+            $params["name_$i"] = $categories[$i]->getName();
+        }
 
-        return array_map(
-            fn(array $data) => $data['name'],
-            $qb->getQuery()->getResult()
-        );
+        $connection = $this->getEntityManager()->getConnection();
+        try {
+            $statement = $connection->prepare($sql);
+            $statement->executeStatement($params);
+        } catch (Exception $e) {
+            $this->logger->error('Invalid upsert query.', ['sql' => $sql, 'params' => $params]);
+            throw new RuntimeException('Cannot upsert categories', previous: $e);
+        }
     }
 
     /**
@@ -78,5 +96,10 @@ class CategoryRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('c');
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 }

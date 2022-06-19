@@ -27,9 +27,9 @@ services:
     public: true
     arguments:
       $url: 'https://gitlab.com/prog-positron/test-app-vacancy/-/raw/master/books.json'
-  App\Domain\Book\UseCase\InsertNewBooks:
+  App\Domain\Book\UseCase\StoreThumbnail:
     arguments:
-      $thumbnailsDirectory: '%kernel.project_dir%/public%app.path.book_thumbnails%'
-  App\Domain\Category\UseCase\AddDefaultCategory:
+      $thumbnailDirectory: '%kernel.project_dir%/public%app.path.book_thumbnails%'
+  App\Domain\Category\DefaultCategory\ServiceConfigDefaultCategoryProvider:
     arguments:
-      $defaultCategory: '%app.default.category%'
+      $defaultCategoryName: '%app.default.category%'

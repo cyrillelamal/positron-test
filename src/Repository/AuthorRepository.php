@@ -39,34 +39,25 @@ class AuthorRepository extends ServiceEntityRepository
         }
     }
 
+    public function upsert(Author ...$authors): void
+    {
+        foreach ($authors as $author) {
+            $this->add($author);
+        }
+
+        $this->getEntityManager()->flush();
+    }
+
     /**
      * @param string ...$names
      * @return Author[]
      */
-    public function findAuthorsByName(string ...$names): array
+    public function findByNames(string ...$names): array
     {
         $qb = $this->createQueryBuilder('a');
 
         $qb->where('a.name IN (:names)')->setParameter('names', $names);
 
         return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * @param string ...$names
-     * @return string[]
-     */
-    public function findExistingNames(string ...$names): array
-    {
-        $qb = $this->createQueryBuilder('a');
-
-        $qb->select('a.name')
-            ->where('a.name IN (:names)')
-            ->setParameter('names', $names);
-
-        return array_map(
-            fn(array $data) => $data['name'],
-            $qb->getQuery()->getResult()
-        );
     }
 }

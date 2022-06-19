@@ -19,7 +19,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @Vich\Uploadable()
  */
 #[ORM\Entity(repositoryClass: BookRepository::class)]
-#[ORM\UniqueConstraint(name: 'book_isbn', columns: ['isbn'])]
+#[ORM\Index(fields: ['isbn'], name: 'book_isbn_idx')]
+#[ORM\Index(fields: ['title'], name: 'book_title_idx')]
 class Book
 {
     use BookGetters;
@@ -72,6 +73,37 @@ class Book
     {
         $this->categories = new ArrayCollection();
         $this->authors = new ArrayCollection();
+    }
+
+    public function isSimilarTo(Book $other): bool
+    {
+        if ($other->hasSameIsbn($this)) {
+            return $other->hasSimilarTitle($this);
+        }
+
+        return $other->hasSimilarTitle($this);
+    }
+
+    public function hasSameIsbn(Book $other): bool
+    {
+        return $this->hasIsbn()
+            && $other->hasIsbn()
+            && $this->getIsbn() === $other->getIsbn();
+    }
+
+    public function hasIsbn(): bool
+    {
+        return null !== $this->getIsbn();
+    }
+
+    public function hasNoIsbn(): bool
+    {
+        return !$this->hasIsbn();
+    }
+
+    public function hasSimilarTitle(Book $other): bool
+    {
+        return trim($this->getTitle()) === trim($other->getTitle());
     }
 
     /**

@@ -19,3 +19,9 @@ framework:
       Symfony\Component\Mailer\Messenger\SendEmailMessage: sync  # TODO: async
       Symfony\Component\Notifier\Message\ChatMessage: async
       Symfony\Component\Notifier\Message\SmsMessage: async
+
+      # TODO: async
+      App\Domain\Book\UseCase\UpsertBook: sync
+      App\Domain\Book\UseCase\StoreThumbnail: sync
+      App\Domain\Book\UseCase\AddCategories: sync
+      App\Domain\Book\UseCase\AddAuthors: sync

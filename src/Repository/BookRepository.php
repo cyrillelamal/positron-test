@@ -6,8 +6,8 @@ use App\Entity\Book;
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 
@@ -44,24 +44,37 @@ class BookRepository extends ServiceEntityRepository
         }
     }
 
-    public function similarBookExists(string $title, ?string $isbn = ''): bool
+    /**
+     * @return Book[]
+     */
+    public function findSimilar(Book ...$books): array
     {
-        $qb = $this->createQueryBuilder('b');
+        $sql = <<<SQL
+SELECT book.id, book.title, book.isbn
+FROM book
+WHERE book.title IN (:titles)
+UNION  # UNION instead of OR allows us to use indexes
+SELECT book.id, book.title, book.isbn
+FROM book 
+WHERE book.isbn IN (:isbns)
+SQL;
 
-        $qb->select('COUNT(b.id)')
-            ->where('b.title = :title')->setParameter('title', $title);
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult(Book::class, 'book');
+        $rsm->addFieldResult('book', 'id', 'id');
+        $rsm->addFieldResult('book', 'title', 'title');
+        $rsm->addFieldResult('book', 'isbn', 'isbn');
 
-        if (null === $isbn) {
-            $qb->orWhere('b.isbn IS NULL');
-        } else {
-            $qb->orWhere('b.isbn = :isbn')->setParameter('isbn', $isbn);
-        }
+        $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
+        $query->setParameter('titles', array_map(fn(Book $book) => $book->getTitle(), $books));
+        $query->setParameter('isbns', array_map(fn(Book $book) => $book->getIsbn(), $books));
 
-        try {
-            return $qb->getQuery()->getSingleScalarResult();
-        } catch (NoResultException|NonUniqueResultException) {
-            return false;
-        }
+        return $query->getResult();
+    }
+
+    public function similarExists(Book ...$books): bool
+    {
+        return (bool)$this->findSimilar(...$books);
     }
 
     public function findByIdJoinCategoriesAndAuthors(int $id): ?Book
@@ -97,7 +110,7 @@ class BookRepository extends ServiceEntityRepository
 
     public function getQueryForCategoryPagination(Category|int $category): Query
     {
-        $id =  $category instanceof Category ? $category->getId() : $category;
+        $id = $category instanceof Category ? $category->getId() : $category;
 
         $qb = $this->createQueryBuilder('b')
             ->join('b.categories', 'categories')

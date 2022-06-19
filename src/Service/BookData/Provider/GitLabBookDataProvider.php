@@ -17,7 +17,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Traversable;
 
-class GitLabBookDataProvider implements BookDataProviderInterface
+final class GitLabBookDataProvider implements BookDataProviderInterface
 {
     private string $url;
     private HttpClientInterface $http;
@@ -58,7 +58,7 @@ class GitLabBookDataProvider implements BookDataProviderInterface
      * @throws TransportExceptionInterface
      * @throws InvalidArgumentException
      */
-    protected function streamBookData(): Generator
+    private function streamBookData(): Generator
     {
         $chunks = (function () {
             $response = $this->http->request(Request::METHOD_GET, $this->url);
