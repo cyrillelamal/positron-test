@@ -22,17 +22,6 @@ services:
       - db-data:/var/lib/mysql:rw
     ports:
       - "3306:3306"
-  database_test:
-    image: mysql:${MYSQL_VERSION:-5.7}
-    environment:
-      MYSQL_DATABASE: test_positron_test
-      MYSQL_USER: positron_test
-      MYSQL_PASSWORD: password_test
-      MYSQL_ROOT_PASSWORD: root_pwd_test
-    volumes:
-      - db-data-test:/var/lib/mysql:rw
-    ports:
-      - "23306:3306"
 #  queue:
 #    image: redis:7.0-alpine3.16
 #    ports:
@@ -52,5 +41,4 @@ services:
 volumes:
   ###> doctrine/doctrine-bundle ###
   db-data:
-  db-data-test:
 ###< doctrine/doctrine-bundle ###

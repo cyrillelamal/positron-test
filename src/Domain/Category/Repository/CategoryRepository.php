@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository;
+namespace App\Domain\Category\Repository;
 
-use App\Entity\Category;
+use App\Domain\Category\Category;
 use App\Service\PlatformInformation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Exception;

@@ -2,7 +2,7 @@
 
 namespace App\Domain\Book;
 
-use App\Entity\Book;
+use App\Domain\Book\Book;
 use Countable;
 
 class Catalogue implements Countable

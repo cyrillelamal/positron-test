@@ -3,8 +3,8 @@
 namespace App\Domain\Author\UseCase;
 
 use App\Domain\Author\Dto\NewAuthorDto;
-use App\Entity\Author;
-use App\Repository\AuthorRepository;
+use App\Domain\Author\Author;
+use App\Domain\Author\Repository\AuthorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;

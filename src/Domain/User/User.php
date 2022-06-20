@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Domain\User;
 
-use App\Domain\User\Role;
-use App\Repository\UserRepository;
+use App\Domain\User\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;

@@ -2,7 +2,7 @@
 
 namespace App\Domain\Feedback\Event;
 
-use App\Entity\Feedback;
+use App\Domain\Feedback\Feedback;
 
 class FeedbackCreatedEvent
 {

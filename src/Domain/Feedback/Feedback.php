@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace App\Domain\Feedback;
 
 use App\Domain\Feedback\Dto\CreateFeedbackDto;
-use App\Entity\Getters\FeedbackGetters;
-use App\Entity\Setters\FeedbackSetters;
-use App\Repository\FeedbackRepository;
+use App\Domain\Feedback\Repository\FeedbackRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -39,6 +37,6 @@ class Feedback
         $feedback->setEmail($dto->email);
         $feedback->setName($dto->name);
 
-        return  $feedback;
+        return $feedback;
     }
 }

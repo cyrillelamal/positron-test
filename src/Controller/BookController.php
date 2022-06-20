@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Book;
-use App\Repository\BookRepository;
+use App\Domain\Book\Book;
+use App\Domain\Book\Repository\BookRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

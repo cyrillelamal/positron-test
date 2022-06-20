@@ -2,8 +2,8 @@
 
 namespace App\Domain\Category\UseCase;
 
-use App\Entity\Category;
-use App\Repository\BookRepository;
+use App\Domain\Category\Category;
+use App\Domain\Book\Repository\BookRepository;
 use Doctrine\ORM\Query;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;

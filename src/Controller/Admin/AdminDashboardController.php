@@ -2,9 +2,9 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Book;
-use App\Entity\Category;
-use App\Entity\Feedback;
+use App\Domain\Book\Book;
+use App\Domain\Category\Category;
+use App\Domain\Feedback\Feedback;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;

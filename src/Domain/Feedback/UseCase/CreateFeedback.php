@@ -5,7 +5,7 @@ namespace App\Domain\Feedback\UseCase;
 use App\Domain\Feedback\Dto\CreateFeedbackDto;
 use App\Domain\Feedback\Event\FeedbackCreatedEvent;
 use App\Domain\Feedback\Exception\BadFeedbackDataException;
-use App\Entity\Feedback;
+use App\Domain\Feedback\Feedback;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;

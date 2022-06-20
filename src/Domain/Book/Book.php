@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Entity;
+namespace App\Domain\Book;
 
-use App\Domain\Book\Status;
-use App\Entity\Getters\BookGetters;
-use App\Entity\Setters\BookSetters;
-use App\Repository\BookRepository;
+use App\Domain\Author\Author;
+use App\Domain\Book\Repository\BookRepository;
+use App\Domain\Category\Category;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;

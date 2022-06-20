@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace App\Domain\Author;
 
-use App\Entity\Getters\AuthorGetters;
-use App\Entity\Setters\AuthorSetters;
-use App\Repository\AuthorRepository;
+use App\Domain\Author\Repository\AuthorRepository;
+use App\Domain\Book\Book;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;

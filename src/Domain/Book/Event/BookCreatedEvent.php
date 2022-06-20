@@ -2,7 +2,7 @@
 
 namespace App\Domain\Book\Event;
 
-use App\Entity\Book;
+use App\Domain\Book\Book;
 
 class BookCreatedEvent
 {

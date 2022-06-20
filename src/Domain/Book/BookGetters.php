@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Entity\Getters;
+namespace App\Domain\Book;
 
-use App\Entity\Author;
-use App\Entity\Category;
+use App\Domain\Author\Author;
+use App\Domain\Category\Category;
 use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Setters;
+namespace App\Domain\Book;
 
 use DateTimeInterface;
 

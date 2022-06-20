@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Getters;
+namespace App\Domain\Feedback;
 
 trait FeedbackGetters
 {

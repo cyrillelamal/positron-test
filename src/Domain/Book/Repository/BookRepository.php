@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Repository;
+namespace App\Domain\Book\Repository;
 
-use App\Entity\Book;
-use App\Entity\Category;
+use App\Domain\Book\Book;
+use App\Domain\Category\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query;

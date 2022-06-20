@@ -3,7 +3,7 @@
 namespace App\Domain\Book\UseCase;
 
 use App\Domain\Book\Dto\StoreThumbnailDto;
-use App\Repository\BookRepository;
+use App\Domain\Book\Repository\BookRepository;
 use Exception;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;

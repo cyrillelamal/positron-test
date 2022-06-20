@@ -2,7 +2,7 @@
 
 namespace App\Domain\User\Event;
 
-use App\Entity\User;
+use App\Domain\User\User;
 
 class UserCreatedEvent
 {

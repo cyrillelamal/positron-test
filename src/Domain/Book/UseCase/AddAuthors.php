@@ -3,9 +3,9 @@
 namespace App\Domain\Book\UseCase;
 
 use App\Domain\Book\Dto\AddAuthorsDto;
-use App\Entity\Author;
-use App\Repository\AuthorRepository;
-use App\Repository\BookRepository;
+use App\Domain\Author\Author;
+use App\Domain\Author\Repository\AuthorRepository;
+use App\Domain\Book\Repository\BookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 

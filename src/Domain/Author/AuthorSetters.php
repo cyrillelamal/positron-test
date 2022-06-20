@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity\Setters;
+namespace App\Domain\Author;
 
-trait CategorySetters
+trait AuthorSetters
 {
     public function setName(string $name): self
     {

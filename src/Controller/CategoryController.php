@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Domain\Category\UseCase\PaginateCategoryBooks;
-use App\Entity\Category;
+use App\Domain\Category\Category;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

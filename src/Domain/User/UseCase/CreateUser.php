@@ -5,7 +5,7 @@ namespace App\Domain\User\UseCase;
 use App\Domain\User\Dto\CreateUserDto;
 use App\Domain\User\Exception\BadUserDataException;
 use App\Domain\User\Exception\UserAlreadyExistsException;
-use App\Entity\User;
+use App\Domain\User\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;

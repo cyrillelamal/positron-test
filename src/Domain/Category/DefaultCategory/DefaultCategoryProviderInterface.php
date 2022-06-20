@@ -2,7 +2,7 @@
 
 namespace App\Domain\Category\DefaultCategory;
 
-use App\Entity\Category;
+use App\Domain\Category\Category;
 
 interface DefaultCategoryProviderInterface
 {

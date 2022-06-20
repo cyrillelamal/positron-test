@@ -2,9 +2,9 @@
 
 namespace App\Domain\Category\UseCase;
 
-use App\Entity\Book;
-use App\Entity\Category;
-use App\Repository\CategoryRepository;
+use App\Domain\Book\Book;
+use App\Domain\Category\Category;
+use App\Domain\Category\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;

@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace App\Domain\Category;
 
-use App\Entity\Getters\CategoryGetters;
-use App\Entity\Setters\CategorySetters;
-use App\Repository\CategoryRepository;
+use App\Domain\Book\Book;
+use App\Domain\Category\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;

@@ -4,9 +4,9 @@ namespace App\Domain\Book\UseCase;
 
 use App\Domain\Book\Dto\AddCategoriesDto;
 use App\Domain\Category\DefaultCategory\DefaultCategoryProviderInterface;
-use App\Entity\Category;
-use App\Repository\BookRepository;
-use App\Repository\CategoryRepository;
+use App\Domain\Category\Category;
+use App\Domain\Book\Repository\BookRepository;
+use App\Domain\Category\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 

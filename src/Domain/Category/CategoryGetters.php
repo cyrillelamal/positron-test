@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity\Getters;
+namespace App\Domain\Category;
 
-use App\Entity\Book;
+use App\Domain\Book\Book;
 use Doctrine\Common\Collections\Collection;
 
 trait CategoryGetters
