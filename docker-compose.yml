@@ -1,15 +1,33 @@
 version: '3'
 
 services:
-  #  php:
-  #    build:
-  #      context: ./
-  #      dockerfile: ./docker-compose/php/Dockerfile
-  #    volumes:
-  #      - ./:/var/www/positron:rw
-  #    depends_on:
-  #      - database
-  #    user: www-data
+  php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www/positron:rw
+    ports:
+      - "9000"
+    depends_on:
+      - database
+    user: www-data
+    working_dir: /var/www/positron
+  nginx:
+    image: nginx:1.17.9-alpine
+    volumes:
+      - ./docker/nginx/positron.com.conf:/etc/nginx/conf.d/positron.com.conf
+      - ./:/var/www/positron:ro
+      - ./var/log/nginx:/var/log/nginx:rw
+    ports:
+      - '80:80'
+    depends_on:
+      - php
+  composer:
+    image: composer:2.1.6  # PHP ~8.0.0
+    working_dir: /var/www/positron
+    volumes:
+      - ./:/var/www/positron:rw
   ###> doctrine/doctrine-bundle ###
   database:
     image: mysql:${MYSQL_VERSION:-5.7}
@@ -26,17 +44,16 @@ services:
 #    image: redis:7.0-alpine3.16
 #    ports:
 #      - "6379:6379"
-#  nginx:
-#    image: nginx:1.8.1-alpine
-#    ports:
-#      - '80:80'
-#    volumes:
-#      - ./docker-compose/nginx:/etc/nginx/conf.d:ro
-#      - ./var/log/nginx:/var/log/nginx:rw
-#      - ./:/var/www/positron:ro
-#    depends_on:
-#      - php
 ###< doctrine/doctrine-bundle ###
+  node:
+    build:
+      context: ./docker/node
+      dockerfile: ./Dockerfile
+    working_dir: /var/www/positron
+    volumes:
+      - ./:/var/www/positron:rw
+    environment:
+      - NODE_OPTIONS='--openssl-legacy-provider'
 
 volumes:
   ###> doctrine/doctrine-bundle ###

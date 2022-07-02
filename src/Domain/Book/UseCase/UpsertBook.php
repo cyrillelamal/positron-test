@@ -61,7 +61,6 @@ final class UpsertBook implements MessageHandlerInterface, LoggerAwareInterface
                 }
 
                 $this->entityManager->persist($book);
-                $this->entityManager->flush();
                 return false;
             });
 

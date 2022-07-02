@@ -39,6 +39,7 @@ class ParseBooksCommand extends Command implements LoggerAwareInterface
         parent::__construct();
     }
 
+//        dcc exec php sh -c "php bin/console app:parse-books"
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
