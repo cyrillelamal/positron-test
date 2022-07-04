@@ -6,7 +6,7 @@ RUN apk add --no-cache bash && \
     chmod +x /usr/local/bin/install-php-extensions && \
     install-php-extensions intl gd exif pdo_mysql
 
-WORKDIR /var/www/pin-test
+WORKDIR /var/www/positron
 
 EXPOSE 9000
 

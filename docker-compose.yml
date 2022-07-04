@@ -16,11 +16,11 @@ services:
   nginx:
     image: nginx:1.17.9-alpine
     volumes:
-      - ./docker/nginx/positron.com.conf:/etc/nginx/conf.d/positron.com.conf
+      - ./docker/nginx:/etc/nginx/conf.d
       - ./:/var/www/positron:ro
       - ./var/log/nginx:/var/log/nginx:rw
     ports:
-      - '80:80'
+      - '8080:80'
     depends_on:
       - php
   composer:

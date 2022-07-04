@@ -21,6 +21,8 @@ docker-compose exec php sh -c "php bin/console d:m:m --no-interaction"
 > Приложение крутится на хосте `positron.com` (nginx-конфиг: `docker/nginx`),
 > поэтому надо подправить `/etc/hosts`.
 
+> **Now, it's available at `localhost:8080`**
+
 ### Админка
 
 Располагается по пути `/admin`.
