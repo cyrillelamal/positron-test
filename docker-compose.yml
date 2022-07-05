@@ -11,7 +11,7 @@ services:
       - "9000"
     depends_on:
       - database
-    user: www-data
+      - queue
     working_dir: /var/www/positron
   nginx:
     image: nginx:1.17.9-alpine
@@ -24,7 +24,7 @@ services:
     depends_on:
       - php
   composer:
-    image: composer:2.1.6  # PHP ~8.0.0
+    image: composer:2.3.7  # PHP ~8.1.0
     working_dir: /var/www/positron
     volumes:
       - ./:/var/www/positron:rw
@@ -40,10 +40,10 @@ services:
       - db-data:/var/lib/mysql:rw
     ports:
       - "3306:3306"
-#  queue:
-#    image: redis:7.0-alpine3.16
-#    ports:
-#      - "6379:6379"
+  queue:
+    image: redis:7.0-alpine3.16
+    ports:
+      - "6379:6379"
 ###< doctrine/doctrine-bundle ###
   node:
     build:

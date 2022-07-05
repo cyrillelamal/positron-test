@@ -5,3 +5,10 @@ flysystem:
       adapter: 'local'
       options:
         directory: '%kernel.project_dir%/public%app.path.book_thumbnails%'
+        permissions:
+          file:
+            public: 0755
+            private: 0755
+          dir:
+            public: 0755
+            private: 0755
